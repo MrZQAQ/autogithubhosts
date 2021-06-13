@@ -1,6 +1,7 @@
 import os,sys,ctypes
 import datetime
 import platform
+import shutil
 import get_ip_utils
 
 hostLocation = ''
@@ -26,7 +27,7 @@ def checkPlatform():
         raise
 
 def dropDuplication(line):
-    if ('#managed by autogithubhosts' in line) or ('#github.com start' in line) or ('#github.com end' in line):
+    if ('# managed by autogithubhosts' in line) or ('#github.com start' in line) or ('#github.com end' in line):
         return True
     return False
 
@@ -39,6 +40,7 @@ def getIp():
 
 def updateHost():
     global addr2ip
+    global hostLocation
     today = datetime.date.today()
     with open(hostLocation, "r") as f1:
         f1_lines = f1.readlines()
@@ -50,8 +52,9 @@ def updateHost():
                      ' **** ' + str(today) +' update ****\n')
             for key in addr2ip:
                 f2.write(addr2ip[key] + "\t" + key + "\t# managed by autogithubhosts\n")
+            f2.write('#github.com end ********')
     os.remove(hostLocation)
-    os.rename("temphost",hostLocation)
+    shutil.move('temphost',hostLocation)
 
 if __name__ == '__main__':
     print('载入列表...')
